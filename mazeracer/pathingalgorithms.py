@@ -275,7 +275,7 @@ def DFS(draw, start_node, end_node):
 def carve_maze_backtracking(grid, draw):
    
     maze = grid
-    open_set = stack()
+    open_set = LifoQueue()
     open_set_hash = set()
     visited_set = set()
 
@@ -283,53 +283,26 @@ def carve_maze_backtracking(grid, draw):
     open_set.put(start_node)
     open_set_hash.add(start_node)
     visited_set.add(start_node)
-
-    while not open_set.is_empty():
+    while open_set.qsize() != 0:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 exit()
 
-        cur_node = open_set.pop()
+        cur_node = open_set.get()
 
         rand_neighbors = cur_node.get_walled_neighbors(maze)
         shuffle(rand_neighbors)
+
         for neighbor in rand_neighbors:
             if neighbor not in open_set_hash and neighbor not in visited_set:
-                # LOOK AT THIS A BIT DEEPER. THERES SOMETHING FISHY
-                # WITH HOW ITS NOT COLORING CERTAIN BLOCKS
                 open_set.put(neighbor)
                 open_set_hash.add(neighbor)
                 visited_set.add(neighbor)
                 cur_node.remove_wall(maze, neighbor)
+                neighbor.set_visited()
 
                 draw()
                 
     return maze
 
-def carving_helper(cur_node, maze, draw):
-    walled_neighbors = cur_node.get_walled_neighbors(maze)
-    shuffle(walled_neighbors)
-    while walled_neighbors:
-        neighbor = walled_neighbors.pop()
-        if not neighbor.visited:
-            cur_node.remove_wall(maze, neighbor)
-            draw()
-            carving_helper(neighbor, maze, draw)
-
-class stack(object):
-    def __init__(self):
-        self.stack = []
-        self.size = 0
-    def put(self, item):
-        self.stack.insert(0, item)
-        self.size += 1
-    def pop(self):
-        self.size -= 1
-        return self.stack.pop(0)
-    def peek(self):
-        return self.stack[0]
-    def is_empty(self):
-        return self.size == 0
-    def __len__(self):
-        return len(self.stack)
