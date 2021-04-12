@@ -154,6 +154,8 @@ class Node(object):
     def draw_down_wall(self):
         pygame.draw.line(WINDOW, WHITE, (self.x_pixel, self.y_pixel+self.width), (self.x_pixel+self.width, self.y_pixel+self.width))
 
+    def reset(self):
+        self.color = BLACK
     def set_end(self):
         self.color = GREEN
     def set_start(self):
@@ -185,8 +187,6 @@ def create_initial_grid():
             new_node = Node(column, row, BOARD_WIDTH//GRID_SIZE, GRID_SIZE)
             grid[row].append(new_node)
 
-    grid[0][0].set_start()
-    grid[GRID_SIZE-1][GRID_SIZE-1].set_end()
     return grid
 
 """ 
@@ -199,6 +199,7 @@ def draw_grid(grid, surface):
     pygame.display.update """
 
 def draw(grid, surface, grid_rows, width_surface):
+    # Remove the last two arguments as they aren't used
     '''
     Redraws the board whenever its called using the contents of the grid
 
@@ -216,25 +217,55 @@ def draw(grid, surface, grid_rows, width_surface):
     # Update the display with the newly drawn nodes.
     pygame.display.update()
 
-
+def calc_mouse_clicked_node(grid, mouse_position, total_rows, width_surface):
+    x, y = mouse_position
+    node_width_pixels = width_surface//total_rows
+    return grid[y//node_width_pixels][x//node_width_pixels]
 
 def main():
     run = True
-
+    solve_started = False
 
     grid = create_initial_grid()
     draw(grid, WINDOW, GRID_SIZE, BOARD_WIDTH)
     lambda_draw = lambda: draw(grid, WINDOW, GRID_SIZE, BOARD_WIDTH)
+    start_node = None 
+    end_node = None 
     maze = pathingalgorithms.carve_maze_backtracking(grid, lambda_draw)
+    
 
     while run:
+        draw(maze, WINDOW, GRID_SIZE, BOARD_WIDTH)
         pygame.display.update()
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 run = False
+            
+            if pygame.mouse.get_pressed()[0] and not solve_started:
+                    mouse_position = pygame.mouse.get_pos()
+                    clicked_node = calc_mouse_clicked_node(maze, mouse_position, GRID_SIZE, BOARD_WIDTH)
+                    
+                    if not start_node and clicked_node != end_node:
+                        clicked_node.set_start()
+                        start_node = clicked_node
+                    elif start_node and not end_node and clicked_node != start_node:
+                        clicked_node.set_end()
+                        end_node = clicked_node
+
+            elif pygame.mouse.get_pressed()[2] and not solve_started:
+                mouse_position = pygame.mouse.get_pos()
+                clicked_node = calc_mouse_clicked_node(maze, mouse_position, GRID_SIZE, BOARD_WIDTH)
+                clicked_node.reset()
+                if clicked_node == start_node:
+                    start_node = None
+                elif clicked_node == end_node:
+                    end_node = None
+
             if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_SPACE:
-                    pathingalgorithms.a_star(maze, lambda_draw, maze[0][0], maze[GRID_SIZE-1][GRID_SIZE-1])
+
+
+                if event.key == pygame.K_SPACE and start_node and end_node:
+                    pathingalgorithms.a_star(maze, lambda_draw, start_node, end_node)
 
     pygame.quit()
 

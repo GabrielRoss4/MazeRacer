@@ -206,13 +206,7 @@ def DFS(draw, start_node, end_node):
                 to_visit.put(neighbor)
 
 """ def carve_maze_backtracking(grid, draw):
-    '''
-    Will use backtracking to randomly carve a maze out of 
-    of the given grid
-    * grid: <list[list]> List of lists containing nodes of the grid
-    * draw: <func> Draws the current version of the grid
-    * start_node: <Node> The starting node to begin carving from
-    '''
+    
 
     '''
         So I want this to work similarly to a DFS in that it will randomly pick
@@ -273,13 +267,20 @@ def DFS(draw, start_node, end_node):
     return maze """
 
 def carve_maze_backtracking(grid, draw):
-   
+    '''
+    Will use iterative backtracking to randomly carve a maze out of 
+    of the given grid
+    * grid: <list[list]> List of lists containing nodes of the grid
+    * draw: <func> Draws the current version of the grid
+    * start_node: <Node> The starting node to begin carving from
+    '''
     maze = grid
     open_set = LifoQueue()
     open_set_hash = set()
     visited_set = set()
 
     start_node = maze[0][0]
+
     open_set.put(start_node)
     open_set_hash.add(start_node)
     visited_set.add(start_node)
@@ -300,7 +301,6 @@ def carve_maze_backtracking(grid, draw):
                 open_set_hash.add(neighbor)
                 visited_set.add(neighbor)
                 cur_node.remove_wall(maze, neighbor)
-                neighbor.set_visited()
 
                 draw()
                 
