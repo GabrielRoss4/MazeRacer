@@ -209,12 +209,12 @@ def DFS(grid, draw, start_node, end_node):
                 visited_set.add(neighbor)
                 to_visit.put(neighbor)
                 neighbor.set_open()
-                sleep(0.05)
 
         if cur_node != start_node:
             cur_node.set_closed()
 
         draw()
+        sleep(0.05)
 
 
 def carve_maze_backtracking(grid, draw):
