@@ -1,7 +1,6 @@
 import pygame
 from queue import PriorityQueue
 
-from pygame.constants import K_1
 import pathingalgorithms
 
 pygame.init()
