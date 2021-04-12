@@ -1,5 +1,7 @@
 import pygame
 from queue import PriorityQueue
+
+from pygame.constants import K_1
 import pathingalgorithms
 
 pygame.init()
@@ -264,7 +266,11 @@ def main():
             if event.type == pygame.KEYDOWN:
 
 
-                if event.key == pygame.K_SPACE and start_node and end_node:
+                if event.key == pygame.K_1 and start_node and end_node:
+                    pathingalgorithms.DFS(maze, lambda_draw, start_node, end_node)
+                elif event.key == pygame.K_2 and start_node and end_node:
+                    pathingalgorithms.dijkstras(maze, lambda_draw, start_node, end_node)
+                elif event.key == pygame.K_3 and start_node and end_node:
                     pathingalgorithms.a_star(maze, lambda_draw, start_node, end_node)
 
     pygame.quit()
